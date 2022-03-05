@@ -6,7 +6,6 @@ fn main() {
    for (k, v) in r {
        println!("{} => {}", k, v);
    }
-   get_magnet();
 }
 
 fn get_data() -> Vec<(String, String)>{
@@ -29,14 +28,23 @@ fn get_data() -> Vec<(String, String)>{
 
 fn get_magnet() -> String {
     let document = Document::from(include_str!("../magnet.html"));
-    let magnet = document.find(Class("list-group-item")).skip(1)
-                 .next()
-                 .unwrap()
-                 .find(Name("a"))
-                 .next()
-                 .unwrap()
-                 .attr("href")
-                 .unwrap();
+    let  mut magnet = "";
+    for node in document.find(Class("list-group-item")){
+        if let Some(m) = node.find(Name("a")).next() {
+            magnet = m.attr("href").unwrap();
+        }
+    }
+    magnet.to_string()
+}
+
+fn get_magnet_try() -> String {
+    let document = Document::from(include_str!("../magnet_try.html"));
+    let  mut magnet = "";
+    for node in document.find(Class("list-group-item")){
+        if let Some(m) = node.find(Name("a")).next() {
+            magnet = m.attr("href").unwrap();
+        }
+    }
     magnet.to_string()
 }
 
@@ -61,6 +69,15 @@ mod tests {
         let m = get_magnet();
         assert_eq!(
             "magnet:?xt=urn:btih:04a6888916168f67e7f16cafb55fcbcfef7317e2",
+            m
+        );
+    }
+
+    #[test]
+    fn get_magnet_try_func_test(){
+        let m = get_magnet_try();
+        assert_eq!(
+            "magnet:?xt=urn:btih:c16080948e35c41f7ad39c52d3c6d7defed04a17",
             m
         );
     }
